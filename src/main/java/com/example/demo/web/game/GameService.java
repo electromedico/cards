@@ -1,5 +1,7 @@
 package com.example.demo.web.game;
 
+import com.example.demo.domain.player.Player;
+
 import java.util.List;
 
 public interface GameService {
@@ -13,9 +15,9 @@ public interface GameService {
 
     void addPlayer(int id, int playerId);
 
-    List<Integer> dealCardToPlayer(int id, int playerId);
+    Player dealCardToPlayer(int id, int playerId);
 
-    void getPlayers(int id);
+    List<Player> getPlayers(int id);
 
     void removePlayer(int id, int playerId);
 }

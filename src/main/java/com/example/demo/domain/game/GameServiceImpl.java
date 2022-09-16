@@ -1,5 +1,6 @@
 package com.example.demo.domain.game;
 
+import com.example.demo.domain.player.Player;
 import com.example.demo.web.game.GameService;
 import org.springframework.stereotype.Service;
 
@@ -33,13 +34,13 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<Integer> dealCardToPlayer(int id, int playerId) {
+    public Player dealCardToPlayer(int id, int playerId) {
         return null;
     }
 
     @Override
-    public void getPlayers(int id) {
-
+    public List<Player> getPlayers(int id) {
+        return null;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.demo.web.game;
 
+import com.example.demo.domain.player.Player;
 import com.example.demo.web.player.PlayerJson;
 import com.example.demo.web.player.PlayerJsonMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,13 +44,13 @@ public class GameController {
 
     @GetMapping("/${id}/deal-to-player/${playerId}")
     public PlayerJson dealCardToPlayer(@PathVariable int id, @PathVariable int playerId) {
-        List<Integer> cards = gameService.dealCardToPlayer(id, playerId);
-        return playerJsonMapper.mapPlayer(cards);
+        Player player = gameService.dealCardToPlayer(id, playerId);
+        return playerJsonMapper.mapPlayer(player);
     }
 
     @GetMapping("/${id}/get-players")
-    public void getPlayers(@PathVariable int id) {
-        gameService.getPlayers(id);
+    public List<PlayerJson> getPlayers(@PathVariable int id) {
+        return gameService.getPlayers(id).stream().map(playerJsonMapper::mapPlayer).toList();
     }
 
     @GetMapping("/${id}/shuffle")

@@ -1,5 +1,6 @@
 package com.example.demo.web.game;
 
+import com.example.demo.domain.player.Player;
 import com.example.demo.web.player.PlayerJson;
 import com.example.demo.web.player.PlayerJsonMapper;
 import org.junit.jupiter.api.Test;
@@ -97,28 +98,44 @@ class GameControllerTest {
     @Test
     public void givenDealCardToPlayerRequest_whenDealCardToPlayer_thenDelegateToService(
             @Mock PlayerJson playerJson,
-            @Mock List<Integer> cards
+            @Mock Player player
     ) {
         // given
         int gameId = 1;
         int playerId = 2;
 
-        when(gameService.dealCardToPlayer(gameId, playerId)).thenReturn(cards);
-        when(playerJsonMapper.mapPlayer(cards)).thenReturn(playerJson);
+        when(gameService.dealCardToPlayer(gameId, playerId)).thenReturn(player);
+        when(playerJsonMapper.mapPlayer(player)).thenReturn(playerJson);
 
         // when
         PlayerJson expected = gameController.dealCardToPlayer(gameId, playerId);
 
-
         // then
         verify(gameService).dealCardToPlayer(gameId, playerId);
-        verify(playerJsonMapper).mapPlayer(cards);
+        verify(playerJsonMapper).mapPlayer(player);
         assertThat(expected).isEqualTo(playerJson);
 
     }
 
     @Test
-    public void givenShuffleRequest_whenShuffle_thenDelegateToSerive() {
+    public void givenGetPlayers_whenGetPlayers_thenDelegateToService(@Mock Player player, @Mock PlayerJson playerJson) {
+        // given
+        int gameId = 1;
+        when(gameService.getPlayers(gameId)).thenReturn(List.of(player));
+        when(playerJsonMapper.mapPlayer(player)).thenReturn(playerJson);
+
+        // when
+        List<PlayerJson> expected = gameController.getPlayers(gameId);
+
+        // then
+        verify(gameService).getPlayers(gameId);
+        verify(playerJsonMapper).mapPlayer(player);
+        assertThat(expected).containsExactly(playerJson);
+
+    }
+
+    @Test
+    public void givenShuffleRequest_whenShuffle_thenDelegateToService() {
         // given
         int gameId = 1;
 
