@@ -2,9 +2,10 @@ package com.example.demo.web.game;
 
 import com.example.demo.domain.game.Game;
 import com.example.demo.domain.player.Player;
-import com.example.demo.erros.GameNotFoundException;
-import com.example.demo.erros.PlayerNotFoundException;
-import com.example.demo.erros.RevisionsDontMatch;
+import com.example.demo.errors.EmptyDeckException;
+import com.example.demo.errors.GameNotFoundFoundException;
+import com.example.demo.errors.PlayerNotFoundException;
+import com.example.demo.errors.RevisionsDontMatchException;
 import com.example.demo.utils.Revision;
 
 import java.util.List;
@@ -12,19 +13,17 @@ import java.util.List;
 public interface GameService {
     Integer newGame();
 
-    void deleteGame(int gameId,Revision revision) throws GameNotFoundException, RevisionsDontMatch;
+    void deleteGame(Integer gameId, Revision revision) throws GameNotFoundFoundException, RevisionsDontMatchException;
 
-    Revision addDeck(int gameId, Revision revision) throws GameNotFoundException, RevisionsDontMatch;
+    Revision addDeck(Integer gameId, Revision revision) throws GameNotFoundFoundException, RevisionsDontMatchException;
 
-    Game addPlayer(int gameId, Revision revision) throws GameNotFoundException, RevisionsDontMatch;
+    List<Player> getPlayers(Integer gameId) throws GameNotFoundFoundException;
 
-    Game dealCardToPlayer(int gameId, int playerId, Revision revision) throws RevisionsDontMatch, GameNotFoundException, PlayerNotFoundException;
+    Game dealCardToPlayer(Integer gameId, Integer playerId, Revision revision) throws RevisionsDontMatchException, GameNotFoundFoundException, PlayerNotFoundException, EmptyDeckException;
 
-    List<Player> getPlayers(int gameId) throws GameNotFoundException;
+    Revision removePlayer(Integer gameId, Integer playerId,Revision revision) throws RevisionsDontMatchException, GameNotFoundFoundException, PlayerNotFoundException;
 
-    Revision removePlayer(int gameId, int playerId,Revision revision) throws RevisionsDontMatch, GameNotFoundException, PlayerNotFoundException;
-
-    Revision shuffle(int gameId, Revision revision) throws GameNotFoundException, RevisionsDontMatch;
+    Revision shuffle(Integer gameId, Revision revision) throws GameNotFoundFoundException, RevisionsDontMatchException;
 
 
 }

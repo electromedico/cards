@@ -1,16 +1,14 @@
 package com.example.demo.domain.game;
 
-import com.example.demo.persistance.game.GameEntity;
+import com.example.demo.errors.GameNotFoundFoundException;
 
 public interface GameRepository {
 
-    int createGame();
+    Game save(Game game);
 
-    Boolean exists(int id);
+    Game findById(Integer gameId) throws GameNotFoundFoundException;
 
-    void deleteGame(int id);
+    void deleteById(Integer gameId);
 
-    GameEntity getGameById(int id);
 
-    Integer save(GameEntity game);
 }

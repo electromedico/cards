@@ -3,9 +3,10 @@ package com.example.demo.domain.game;
 import com.example.demo.domain.deck.Card;
 import com.example.demo.domain.deck.Deck;
 import com.example.demo.domain.player.Player;
-import com.example.demo.erros.GameNotFoundException;
-import com.example.demo.erros.PlayerNotFoundException;
-import com.example.demo.erros.RevisionsDontMatch;
+import com.example.demo.errors.EmptyDeckException;
+import com.example.demo.errors.GameNotFoundFoundException;
+import com.example.demo.errors.PlayerNotFoundException;
+import com.example.demo.errors.RevisionsDontMatchException;
 import com.example.demo.persistance.game.GameEntityMapper;
 import com.example.demo.utils.Revision;
 import com.example.demo.web.game.GameService;
@@ -13,10 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Service
 public class GameServiceImpl implements GameService {
+
     @Autowired
     private GameRepository gameRepository;
 
@@ -26,69 +28,63 @@ public class GameServiceImpl implements GameService {
     @Override
     public Integer newGame() {
         Game game = Game.builder().deck(Deck.buildNewDeck()).build();
-        return gameRepository.save(gameEntityMapper.map(game));
+        return gameRepository.save(game).getId();
     }
 
     @Override
-    public void deleteGame(int gameId, Revision revision) throws GameNotFoundException, RevisionsDontMatch {
-        Game game = Optional.of(gameRepository.getGameById(gameId)).map(gameEntityMapper::map).orElseThrow(() -> new GameNotFoundException(gameId));
+    public void deleteGame(Integer gameId, Revision revision) throws GameNotFoundFoundException, RevisionsDontMatchException {
+        Game game = gameRepository.findById(gameId);
         game.getRevision().match(revision);
-        gameRepository.deleteGame(gameId);
+        gameRepository.deleteById(game.getId());
     }
 
     @Override
-    public Revision addDeck(int gameId, Revision revision) throws GameNotFoundException, RevisionsDontMatch {
-        Game game = Optional.of(gameRepository.getGameById(gameId)).map(gameEntityMapper::map).orElseThrow(() -> new GameNotFoundException(gameId));
+    public Revision addDeck(Integer gameId, Revision revision) throws GameNotFoundFoundException, RevisionsDontMatchException {
+        Game game = gameRepository.findById(gameId);
         game.getRevision().matchAndBump(revision);
         game.getDeck().getCards().addAll(Deck.buildNewSetOfCards());
-        gameRepository.save(gameEntityMapper.map(game));
+        gameRepository.save(game);
         return game.getRevision();
     }
 
 
     @Override
-    public Game addPlayer(int gameId, Revision revision) throws GameNotFoundException, RevisionsDontMatch {
-        Game game = Optional.of(gameRepository.getGameById(gameId)).map(gameEntityMapper::map).orElseThrow(() -> new GameNotFoundException(gameId));
-        game.getRevision().matchAndBump(revision);
-        game.setPlayers(List.of(Player.builder().build()));
-        gameRepository.save(gameEntityMapper.map(game));
-        return game;
-    }
-
-    @Override
-    public Game dealCardToPlayer(int gameId, int playerId, Revision revision) throws RevisionsDontMatch, GameNotFoundException, PlayerNotFoundException {
-        Game game = Optional.of(gameRepository.getGameById(gameId)).map(gameEntityMapper::map).orElseThrow(() -> new GameNotFoundException(gameId));
-        game.getRevision().matchAndBump(revision);
-        Player player = game.getPlayers().stream().filter(element -> element.getId() == playerId).findFirst().orElseThrow(() -> new PlayerNotFoundException(playerId));
-        Optional<Card> card = game.getDeck().getCards().stream().findAny();
-        card.ifPresent(element -> player.getCards().add(element));
-        gameRepository.save(gameEntityMapper.map(game));
-        return game;
-
-    }
-
-    @Override
-    public List<Player> getPlayers(int gameId) throws GameNotFoundException {
-        Game game = Optional.of(gameRepository.getGameById(gameId)).map(gameEntityMapper::map).orElseThrow(() -> new GameNotFoundException(gameId));
+    public List<Player> getPlayers(Integer gameId) throws GameNotFoundFoundException {
+        Game game = gameRepository.findById(gameId);
         return game.getPlayers();
     }
 
     @Override
-    public Revision removePlayer(int gameId, int playerId, Revision revision) throws RevisionsDontMatch, GameNotFoundException, PlayerNotFoundException {
-        Game game = Optional.of(gameRepository.getGameById(gameId)).map(gameEntityMapper::map).orElseThrow(() -> new GameNotFoundException(gameId));
+    public Game dealCardToPlayer(Integer gameId, Integer playerId, Revision revision) throws RevisionsDontMatchException, GameNotFoundFoundException, PlayerNotFoundException, EmptyDeckException {
+        Game game = gameRepository.findById(gameId);
         game.getRevision().matchAndBump(revision);
-        Player player = game.getPlayers().stream().filter(element -> element.getId() == playerId).findFirst().orElseThrow(() -> new PlayerNotFoundException(playerId));
+        Player player = game.getPlayers().stream().filter(p -> p.getId() ==playerId ).findFirst().orElseThrow(() -> new PlayerNotFoundException(playerId));
+        List<Card> cards = game.getDeck().getCards();
+        if (cards.isEmpty()) {
+            throw new EmptyDeckException();
+        }
+        Card card = cards.remove(0);
+        player.getCards().add(card);
+        game = gameRepository.save(game);
+        return game;
+    }
+
+    @Override
+    public Revision removePlayer(Integer gameId, Integer playerId, Revision revision) throws RevisionsDontMatchException, GameNotFoundFoundException, PlayerNotFoundException {
+        Game game = gameRepository.findById(gameId);
+        game.getRevision().matchAndBump(revision);
+        Player player = game.getPlayers().stream().filter(element -> Objects.equals(element.getId(), playerId)).findFirst().orElseThrow(() -> new PlayerNotFoundException(playerId));
         game.getPlayers().remove(player);
-        gameRepository.save(gameEntityMapper.map(game));
+        gameRepository.save(game);
         return game.getRevision();
     }
 
     @Override
-    public Revision shuffle(int gameId, Revision revision) throws GameNotFoundException, RevisionsDontMatch {
-        Game game = Optional.of(gameRepository.getGameById(gameId)).map(gameEntityMapper::map).orElseThrow(() -> new GameNotFoundException(gameId));
+    public Revision shuffle(Integer gameId, Revision revision) throws GameNotFoundFoundException, RevisionsDontMatchException {
+        Game game = gameRepository.findById(gameId);
         game.getRevision().matchAndBump(revision);
         game.getDeck().shuffle();
-        gameRepository.save(gameEntityMapper.map(game));
+        gameRepository.save(game);
         return game.getRevision();
 
 

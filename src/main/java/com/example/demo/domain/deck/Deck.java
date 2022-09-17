@@ -11,7 +11,6 @@ import java.util.Random;
 @Data
 @Builder
 public class Deck {
-    private Integer id;
     private List<Card> cards;
 
     public static Deck buildNewDeck(){

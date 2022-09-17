@@ -2,17 +2,20 @@ package com.example.demo.web.game;
 
 import com.example.demo.domain.game.Game;
 import com.example.demo.domain.player.Player;
-import com.example.demo.erros.GameNotFoundException;
-import com.example.demo.erros.PlayerNotFoundException;
-import com.example.demo.erros.RevisionsDontMatch;
+import com.example.demo.errors.EmptyDeckException;
+import com.example.demo.errors.GameNotFoundFoundException;
+import com.example.demo.errors.PlayerNotFoundException;
+import com.example.demo.errors.RevisionsDontMatchException;
 import com.example.demo.utils.Revision;
 import com.example.demo.web.player.PlayerJson;
 import com.example.demo.web.player.PlayerJsonMapper;
+import com.example.demo.web.player.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.AbstractMap;
 import java.util.List;
 
 @RestController
@@ -22,7 +25,13 @@ public class GameController {
     public GameService gameService;
 
     @Autowired
+    public PlayerService playerService;
+
+    @Autowired
     public PlayerJsonMapper playerJsonMapper;
+
+    @Autowired
+    public GameJsonMapper gameJsonMapper;
 
     @GetMapping("/new")
     public Integer newGame(HttpServletResponse response) {
@@ -31,44 +40,44 @@ public class GameController {
     }
 
     @DeleteMapping("/${id}")
-    public void deleteGame(@PathVariable int id, @RequestHeader(HttpHeaders.IF_MATCH) int revision ) throws GameNotFoundException, RevisionsDontMatch {
+    public void deleteGame(@PathVariable int id, @RequestHeader(HttpHeaders.IF_MATCH) int revision ) throws GameNotFoundFoundException, RevisionsDontMatchException {
         gameService.deleteGame(id, new Revision(revision));
     }
 
     @GetMapping("/${id}/add-deck")
-    public void addDeck(@PathVariable int id, @RequestHeader(HttpHeaders.IF_MATCH) int revision, HttpServletResponse response) throws RevisionsDontMatch, GameNotFoundException {
+    public void addDeck(@PathVariable int id, @RequestHeader(HttpHeaders.IF_MATCH) int revision, HttpServletResponse response) throws RevisionsDontMatchException, GameNotFoundFoundException {
         Revision newRevision = gameService.addDeck(id, new Revision(revision));
         response.addHeader(HttpHeaders.IF_MATCH, newRevision.toString());
 
     }
 
     @GetMapping("/${id}/add-player")
-    public Integer addPlayer(@PathVariable int id,@RequestHeader(HttpHeaders.IF_MATCH) int revision,  HttpServletResponse response) throws GameNotFoundException, RevisionsDontMatch {
-        Game game = gameService.addPlayer(id, new Revision(revision));
-        response.addHeader(HttpHeaders.IF_MATCH, game.getRevision().toString());
-        return game.getPlayers().get(game.getPlayers().size()-1).getId();
+    public Integer addPlayer(@PathVariable int id,@RequestHeader(HttpHeaders.IF_MATCH) int revision,  HttpServletResponse response) throws GameNotFoundFoundException, RevisionsDontMatchException {
+        AbstractMap.SimpleEntry<Revision, Player> revisionPlayer = playerService.addPlayer(id, new Revision(revision));
+        response.addHeader(HttpHeaders.IF_MATCH, revisionPlayer.getKey().toString());
+        return revisionPlayer.getValue().getId();
     }
 
     @GetMapping("/${id}/remove-player/${playerId}")
-    public void removePlayer(@PathVariable int id, @PathVariable int playerId, @RequestHeader(HttpHeaders.IF_MATCH) int revision, HttpServletResponse response) throws RevisionsDontMatch, PlayerNotFoundException, GameNotFoundException {
+    public void removePlayer(@PathVariable int id, @PathVariable int playerId, @RequestHeader(HttpHeaders.IF_MATCH) int revision, HttpServletResponse response) throws RevisionsDontMatchException, PlayerNotFoundException, GameNotFoundFoundException {
         Revision newRevision = gameService.removePlayer(id, playerId, new Revision(revision));
         response.addHeader(HttpHeaders.IF_MATCH, newRevision.toString());
     }
 
     @GetMapping("/${id}/deal-to-player/${playerId}")
-    public PlayerJson dealCardToPlayer( @PathVariable int id, @PathVariable int playerId, @RequestHeader(HttpHeaders.IF_MATCH) int revision, HttpServletResponse response) throws RevisionsDontMatch, PlayerNotFoundException, GameNotFoundException {
+    public GameJson dealCardToPlayer( @PathVariable int id, @PathVariable int playerId, @RequestHeader(HttpHeaders.IF_MATCH) int revision, HttpServletResponse response) throws RevisionsDontMatchException, PlayerNotFoundException, GameNotFoundFoundException, EmptyDeckException {
         Game game = gameService.dealCardToPlayer(id, playerId, new Revision(revision));
         response.addHeader(HttpHeaders.IF_MATCH, game.getRevision().toString());
-        return playerJsonMapper.mapPlayer(game.getPlayers().stream().filter(player -> player.getId()==playerId);
+        return gameJsonMapper.map(game);
     }
 
     @GetMapping("/${id}/get-players")
-    public List<PlayerJson> getPlayers(@PathVariable int id) throws GameNotFoundException {
+    public List<PlayerJson> getPlayers(@PathVariable int id) throws GameNotFoundFoundException {
         return gameService.getPlayers(id).stream().map(playerJsonMapper::mapPlayer).toList();
     }
 
     @GetMapping("/${id}/shuffle")
-    public void shuffle(@PathVariable int id, @RequestHeader(HttpHeaders.IF_MATCH) int revision, HttpServletResponse response) throws RevisionsDontMatch, GameNotFoundException {
+    public void shuffle(@PathVariable int id, @RequestHeader(HttpHeaders.IF_MATCH) int revision, HttpServletResponse response) throws RevisionsDontMatchException, GameNotFoundFoundException {
         Revision newRevision = gameService.shuffle(id, new Revision(revision));
         response.addHeader(HttpHeaders.IF_MATCH, newRevision.toString());
     }
