@@ -1,3 +1,4 @@
+/* (C) 2022 */
 package com.example.demo.web.game;
 
 import com.example.demo.domain.game.Game;
@@ -8,17 +9,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class GameJsonMapper {
-    @Autowired
-    private PlayerJsonMapper playerJsonMapper;
-    @Autowired
-    private DeckJsonMapper deckJsonMapper;
+  @Autowired private PlayerJsonMapper playerJsonMapper;
+  @Autowired private DeckJsonMapper deckJsonMapper;
 
-    public GameJson map(Game game){
-        return GameJson.builder()
-                .id(game.getId())
-                .players(game.getPlayers().stream().map(playerJsonMapper::mapPlayer).toList())
-                .deck(deckJsonMapper.map(game.getDeck()))
-                .build();
-
-    }
+  public GameJson map(Game game) {
+    return GameJson.builder()
+        .id(game.getId())
+        .players(game.getPlayers().stream().map(playerJsonMapper::mapPlayer).toList())
+        .deck(deckJsonMapper.map(game.getDeck()))
+        .build();
+  }
 }

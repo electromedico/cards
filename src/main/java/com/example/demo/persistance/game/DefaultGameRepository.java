@@ -1,3 +1,4 @@
+/* (C) 2022 */
 package com.example.demo.persistance.game;
 
 import com.example.demo.domain.game.Game;
@@ -9,23 +10,24 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class DefaultGameRepository implements GameRepository {
 
-    @Autowired
-    private GameEntityDao gameEntityDao;
-    @Autowired
-    private GameEntityMapper gameEntityMapper;
+  @Autowired private GameEntityDao gameEntityDao;
+  @Autowired private GameEntityMapper gameEntityMapper;
 
-    @Override
-    public Game save(Game game) {
-        return gameEntityMapper.fromDto(gameEntityDao.save(gameEntityMapper.toDto(game)));
-    }
+  @Override
+  public Game save(Game game) {
+    return gameEntityMapper.fromDto(gameEntityDao.save(gameEntityMapper.toDto(game)));
+  }
 
-    @Override
-    public Game findById(Integer gameId) throws GameNotFoundFoundException {
-        return gameEntityDao.findById(gameId).map(gameEntityMapper::fromDto).orElseThrow(() -> new GameNotFoundFoundException(gameId));
-    }
+  @Override
+  public Game findById(Integer gameId) throws GameNotFoundFoundException {
+    return gameEntityDao
+        .findById(gameId)
+        .map(gameEntityMapper::fromDto)
+        .orElseThrow(() -> new GameNotFoundFoundException(gameId));
+  }
 
-    @Override
-    public void deleteById(Integer gameId) {
-        gameEntityDao.deleteById(gameId);
-    }
+  @Override
+  public void deleteById(Integer gameId) {
+    gameEntityDao.deleteById(gameId);
+  }
 }

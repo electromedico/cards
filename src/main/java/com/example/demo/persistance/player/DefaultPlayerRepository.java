@@ -1,3 +1,4 @@
+/* (C) 2022 */
 package com.example.demo.persistance.player;
 
 import com.example.demo.domain.game.Game;
@@ -11,30 +12,29 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class DefaultPlayerRepository implements PlayerRepository {
-    @Autowired
-    PlayerEntityDao playerEntityDao;
-    @Autowired
-    PlayerEntityMapper playerEntityMapper;
+  @Autowired PlayerEntityDao playerEntityDao;
+  @Autowired PlayerEntityMapper playerEntityMapper;
 
-    @Autowired
-    GameEntityMapper gameEntityMapper;
+  @Autowired GameEntityMapper gameEntityMapper;
 
-    @Override
-    public Player findById(Integer playerId) throws PlayerNotFoundException {
-        return playerEntityDao.findById(playerId).map(playerEntityMapper::fromDto).orElseThrow(() -> new PlayerNotFoundException(playerId));
-    }
+  @Override
+  public Player findById(Integer playerId) throws PlayerNotFoundException {
+    return playerEntityDao
+        .findById(playerId)
+        .map(playerEntityMapper::fromDto)
+        .orElseThrow(() -> new PlayerNotFoundException(playerId));
+  }
 
-    @Override
-    public Player saveNewPlayerToGame(Game game) {
-        GameEntity gameEntity = gameEntityMapper.toDto(game);
-        PlayerEntity playerEntity = new PlayerEntity();
-        playerEntity.setGameEntity(gameEntity);
-        return playerEntityMapper.fromDto(playerEntityDao.save(playerEntity));
-    }
+  @Override
+  public Player saveNewPlayerToGame(Game game) {
+    GameEntity gameEntity = gameEntityMapper.toDto(game);
+    PlayerEntity playerEntity = new PlayerEntity();
+    playerEntity.setGameEntity(gameEntity);
+    return playerEntityMapper.fromDto(playerEntityDao.save(playerEntity));
+  }
 
-
-    @Override
-    public void deleteById(Integer playerId) {
-        playerEntityDao.deleteById(playerId);
-    }
+  @Override
+  public void deleteById(Integer playerId) {
+    playerEntityDao.deleteById(playerId);
+  }
 }

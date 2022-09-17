@@ -1,7 +1,8 @@
+/* (C) 2022 */
 package com.example.demo.errors;
 
 public class EmptyDeckException extends Exception {
-    public EmptyDeckException() {
-        super("the deck is empty");
-    }
+  public EmptyDeckException() {
+    super("the deck is empty");
+  }
 }

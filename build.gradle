@@ -3,6 +3,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.13.RELEASE'
     id 'java'
     id "io.freefair.lombok" version "6.5.1"
+    id "com.diffplug.spotless" version "6.11.0"
 }
 
 group = 'com.example'
@@ -23,4 +24,20 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+spotless {
+    java {
+        // Use the default importOrder configuration
+        importOrder()
+        
+        removeUnusedImports()
+
+        // Choose one of these formatters.
+        googleJavaFormat()   // has its own section below
+
+        formatAnnotations()  // fixes formatting of type annotations, see below
+
+        licenseHeader '/* (C) $YEAR */' // or licenseHeaderFile
+    }
 }
