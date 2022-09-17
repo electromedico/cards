@@ -7,6 +7,8 @@ public interface GameRepository {
 
   Game save(Game game);
 
+  void update(Game game);
+
   Game findById(Integer gameId) throws GameNotFoundFoundException;
 
   void deleteById(Integer gameId);

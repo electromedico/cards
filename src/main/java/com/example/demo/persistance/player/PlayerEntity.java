@@ -1,7 +1,6 @@
 /* (C) 2022 */
 package com.example.demo.persistance.player;
 
-import com.example.demo.persistance.game.GameEntity;
 import java.sql.Clob;
 import javax.persistence.*;
 
@@ -13,9 +12,8 @@ public class PlayerEntity {
   @Column(name = "id", nullable = false)
   private Integer id;
 
-  @ManyToOne
-  @JoinColumn(name = "game_entity_id")
-  private GameEntity gameEntity;
+  @Column(name = "gameId", nullable = false)
+  private Integer gameId;
 
   @Lob
   @Column(name = "cards")
@@ -29,19 +27,19 @@ public class PlayerEntity {
     this.cards = cards;
   }
 
-  public GameEntity getGameEntity() {
-    return gameEntity;
-  }
-
-  public void setGameEntity(GameEntity gameEntity) {
-    this.gameEntity = gameEntity;
-  }
-
   public Integer getId() {
     return id;
   }
 
   public void setId(Integer id) {
     this.id = id;
+  }
+
+  public Integer getGameId() {
+    return gameId;
+  }
+
+  public void setGameId(Integer gameId) {
+    this.gameId = gameId;
   }
 }

@@ -4,24 +4,27 @@ package com.example.demo.domain.game;
 import com.example.demo.domain.deck.Card;
 import com.example.demo.domain.deck.Deck;
 import com.example.demo.domain.player.Player;
+import com.example.demo.domain.player.PlayerRepository;
 import com.example.demo.errors.EmptyDeckException;
 import com.example.demo.errors.GameNotFoundFoundException;
 import com.example.demo.errors.PlayerNotFoundException;
 import com.example.demo.errors.RevisionsDontMatchException;
-import com.example.demo.persistance.game.GameEntityMapper;
 import com.example.demo.utils.Revision;
 import com.example.demo.web.game.GameService;
-import java.util.List;
-import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class GameServiceImpl implements GameService {
 
   @Autowired private GameRepository gameRepository;
 
-  @Autowired private GameEntityMapper gameEntityMapper;
+  @Autowired private PlayerRepository playerRepository;
 
   @Override
   public Integer newGame() {
@@ -35,6 +38,7 @@ public class GameServiceImpl implements GameService {
     Game game = gameRepository.findById(gameId);
     game.getRevision().match(revision);
     gameRepository.deleteById(game.getId());
+    playerRepository.deleteByGameId(gameId);
   }
 
   @Override
@@ -42,15 +46,11 @@ public class GameServiceImpl implements GameService {
       throws GameNotFoundFoundException, RevisionsDontMatchException {
     Game game = gameRepository.findById(gameId);
     game.getRevision().matchAndBump(revision);
-    game.getDeck().getCards().addAll(Deck.buildNewSetOfCards());
-    gameRepository.save(game);
+    List<Card> cards = new ArrayList<>(game.getDeck().getCards());
+    cards.addAll(Deck.buildNewSetOfCards());
+    game.getDeck().setCards(cards);
+    gameRepository.update(game);
     return game.getRevision();
-  }
-
-  @Override
-  public List<Player> getPlayers(Integer gameId) throws GameNotFoundFoundException {
-    Game game = gameRepository.findById(gameId);
-    return game.getPlayers();
   }
 
   @Override
@@ -59,34 +59,29 @@ public class GameServiceImpl implements GameService {
           EmptyDeckException {
     Game game = gameRepository.findById(gameId);
     game.getRevision().matchAndBump(revision);
+
+    List<Player> players = playerRepository.findByGameID(gameId);
+    game.setPlayers(players);
     Player player =
-        game.getPlayers().stream()
-            .filter(p -> p.getId() == playerId)
+        players.stream()
+            .filter(p -> Objects.equals(p.getId(), playerId))
             .findFirst()
             .orElseThrow(() -> new PlayerNotFoundException(playerId));
-    List<Card> cards = game.getDeck().getCards();
-    if (cards.isEmpty()) {
+    List<Card> newDeck = new ArrayList<>(game.getDeck().getCards());
+    if (newDeck.isEmpty()) {
       throw new EmptyDeckException();
     }
-    Card card = cards.remove(0);
-    player.getCards().add(card);
-    game = gameRepository.save(game);
+    Card card = newDeck.remove(0);
+    game.getDeck().setCards(newDeck);
+    List<Card> newPlayerCards =
+        CollectionUtils.isEmpty(player.getCards())
+            ? new ArrayList<>()
+            : new ArrayList<>(player.getCards());
+    newPlayerCards.add(card);
+    player.setCards(newPlayerCards);
+    playerRepository.updatePlayer(player, gameId);
+    gameRepository.update(game);
     return game;
-  }
-
-  @Override
-  public Revision removePlayer(Integer gameId, Integer playerId, Revision revision)
-      throws RevisionsDontMatchException, GameNotFoundFoundException, PlayerNotFoundException {
-    Game game = gameRepository.findById(gameId);
-    game.getRevision().matchAndBump(revision);
-    Player player =
-        game.getPlayers().stream()
-            .filter(element -> Objects.equals(element.getId(), playerId))
-            .findFirst()
-            .orElseThrow(() -> new PlayerNotFoundException(playerId));
-    game.getPlayers().remove(player);
-    gameRepository.save(game);
-    return game.getRevision();
   }
 
   @Override
@@ -95,7 +90,7 @@ public class GameServiceImpl implements GameService {
     Game game = gameRepository.findById(gameId);
     game.getRevision().matchAndBump(revision);
     game.getDeck().shuffle();
-    gameRepository.save(game);
+    gameRepository.update(game);
     return game.getRevision();
   }
 }

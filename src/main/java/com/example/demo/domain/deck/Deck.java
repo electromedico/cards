@@ -19,7 +19,7 @@ public class Deck {
   public static List<Card> buildNewSetOfCards() {
     var cards = new ArrayList<Card>();
     for (Suit suit : Suit.values()) {
-      for (int i = 0; i < 13; i++) {
+      for (int i = 1; i <= 13; i++) {
         cards.add(new Card(suit, i));
       }
     }
@@ -33,7 +33,7 @@ public class Deck {
 
     int i = current.size();
     while (i != 0) {
-      var next = rand.nextInt(i - 1);
+      var next = rand.nextInt(i);
       shuffle.add(current.get(next));
       current.remove(next);
       --i;

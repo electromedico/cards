@@ -1,10 +1,7 @@
 /* (C) 2022 */
 package com.example.demo.persistance.game;
 
-import com.example.demo.persistance.player.PlayerEntity;
 import java.sql.Clob;
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.*;
 
 @Entity
@@ -18,20 +15,9 @@ public class GameEntity {
   @Column(name = "revision")
   private Integer revision;
 
-  @OneToMany(mappedBy = "gameEntity", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<PlayerEntity> playerEntities = new ArrayList<>();
-
   @Lob
   @Column(name = "cards")
   private Clob cards;
-
-  public List<PlayerEntity> getPlayers() {
-    return playerEntities;
-  }
-
-  public void setPlayers(List<PlayerEntity> playerEntities) {
-    this.playerEntities = playerEntities;
-  }
 
   public Integer getId() {
     return id;

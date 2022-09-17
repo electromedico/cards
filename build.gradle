@@ -18,6 +18,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'com.google.code.gson:gson:2.9.1'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
     runtimeOnly 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
@@ -30,7 +31,7 @@ spotless {
     java {
         // Use the default importOrder configuration
         importOrder()
-        
+
         removeUnusedImports()
 
         // Choose one of these formatters.

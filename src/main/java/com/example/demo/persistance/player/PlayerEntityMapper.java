@@ -3,44 +3,28 @@ package com.example.demo.persistance.player;
 
 import com.example.demo.domain.deck.Card;
 import com.example.demo.domain.player.Player;
-import com.example.demo.errors.ServerException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.gson.Gson;
-import java.sql.Clob;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-import javax.sql.rowset.serial.SerialClob;
+import com.example.demo.persistance.cards.CardEntityMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class PlayerEntityMapper {
+
+  @Autowired private CardEntityMapper cardEntityMapper;
+
   public Player fromDto(PlayerEntity playerEntity) {
-    List<Card> cards = null;
-    try {
-      cards = mapCards(playerEntity.getCards());
-    } catch (JsonProcessingException e) {
-      throw new ServerException(e);
-    }
+    List<Card> cards;
+    cards = cardEntityMapper.mapCards(playerEntity.getCards());
     return Player.builder().id(playerEntity.getId()).cards(cards).build();
   }
 
-  public PlayerEntity toDto(Player player) {
+  public PlayerEntity toDto(Player player, Integer gameId) {
     PlayerEntity playerEntity = new PlayerEntity();
     playerEntity.setId(player.getId());
-    String json = new Gson().toJson(player.getCards());
-    try {
-      playerEntity.setCards(new SerialClob(json.toCharArray()));
-    } catch (SQLException e) {
-      throw new ServerException(e);
-    }
+    playerEntity.setGameId(gameId);
+    playerEntity.setCards(cardEntityMapper.mapCards(player.getCards()));
     return playerEntity;
-  }
-
-  private List<Card> mapCards(Clob clob) throws JsonProcessingException {
-    String json = clob.toString();
-
-    List<Card> cards = Arrays.stream(new Gson().fromJson(json, Card[].class)).toList();
-    return cards;
   }
 }

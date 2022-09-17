@@ -11,14 +11,14 @@ public class Revision {
 
   private int value;
 
-  public Revision matchAndBump(Revision revision) throws RevisionsDontMatchException {
+  public void matchAndBump(Revision revision) throws RevisionsDontMatchException {
     match(revision);
     this.setValue(++value);
-    return this;
   }
 
   public void match(Revision revision) throws RevisionsDontMatchException {
-    if (this.value != revision.value) throw new RevisionsDontMatchException(revision.value);
+    if (this.value != revision.value)
+      throw new RevisionsDontMatchException(revision.value, this.value);
   }
 
   public String toString() {

@@ -6,7 +6,9 @@ import com.example.demo.errors.GameNotFoundFoundException;
 import com.example.demo.errors.PlayerNotFoundException;
 import com.example.demo.errors.RevisionsDontMatchException;
 import com.example.demo.utils.Revision;
+
 import java.util.AbstractMap;
+import java.util.List;
 
 public interface PlayerService {
 
@@ -15,4 +17,8 @@ public interface PlayerService {
 
   Revision removePlayer(Integer gameId, Integer playerId, Revision revision)
       throws RevisionsDontMatchException, GameNotFoundFoundException, PlayerNotFoundException;
+
+  List<Player> getPlayersByGameId(Integer gameId) throws GameNotFoundFoundException;
+
+  Player getPlayerById(Integer playerId) throws PlayerNotFoundException;
 }

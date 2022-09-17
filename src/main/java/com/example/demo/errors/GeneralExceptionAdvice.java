@@ -27,7 +27,7 @@ public class GeneralExceptionAdvice {
   @ResponseBody
   @ExceptionHandler(RevisionsDontMatchException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  String revisionsDontMatchExceptionHandler(NotFoundException ex) {
+  String revisionsDontMatchExceptionHandler(RevisionsDontMatchException ex) {
     return ex.getMessage();
   }
 }

@@ -4,10 +4,10 @@ package com.example.demo.domain.player;
 import com.example.demo.domain.deck.Card;
 import java.util.List;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 
 @Builder
-@Getter
+@Data
 public class Player {
   Integer id;
   List<Card> cards;

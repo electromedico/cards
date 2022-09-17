@@ -15,7 +15,14 @@ public class DefaultGameRepository implements GameRepository {
 
   @Override
   public Game save(Game game) {
-    return gameEntityMapper.fromDto(gameEntityDao.save(gameEntityMapper.toDto(game)));
+    GameEntity gameEntity = gameEntityDao.save(gameEntityMapper.toDto(game));
+    return gameEntityMapper.fromDto(gameEntity);
+  }
+
+  // todo fix wierd bug and remove this
+  @Override
+  public void update(Game game) {
+    gameEntityDao.save(gameEntityMapper.toDto(game));
   }
 
   @Override

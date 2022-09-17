@@ -9,5 +9,5 @@ import lombok.Data;
 @Builder
 public class CardJson {
   private Suit suit;
-  private Integer value;
+  private String value;
 }

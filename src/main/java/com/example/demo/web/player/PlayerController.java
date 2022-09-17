@@ -1,20 +1,23 @@
 /* (C) 2022 */
 package com.example.demo.web.player;
 
-import org.springframework.web.bind.annotation.*;
+import com.example.demo.errors.PlayerNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/player")
 public class PlayerController {
 
-  @PostMapping()
-  public int addPlayer() {
-    return 1;
-  }
+  @Autowired PlayerService playerService;
+  @Autowired PlayerJsonMapper playerJsonMapper;
 
-  @DeleteMapping
-  @RequestMapping("${id}")
-  public int deletePlayer(@PathVariable int id) {
-    return id;
+  @GetMapping
+  @RequestMapping("{id}")
+  public PlayerJson getPlayer(@PathVariable int id) throws PlayerNotFoundException {
+    return playerJsonMapper.mapPlayer(playerService.getPlayerById(id));
   }
 }
