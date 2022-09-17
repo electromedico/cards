@@ -1,6 +1,10 @@
 package com.example.demo.web.game;
 
 import com.example.demo.domain.player.Player;
+import com.example.demo.erros.GameNotFoundException;
+import com.example.demo.erros.PlayerNotFoundException;
+import com.example.demo.erros.RevisionsDontMatch;
+import com.example.demo.utils.Revision;
 import com.example.demo.web.player.PlayerJson;
 import com.example.demo.web.player.PlayerJsonMapper;
 import org.junit.jupiter.api.Test;
@@ -43,41 +47,42 @@ class GameControllerTest {
 
 
     @Test
-    public void givenDeleteGameRequest_whenDeleteGame_thenDelegateToService() {
+    public void givenDeleteGameRequest_whenDeleteGame_thenDelegateToService() throws GameNotFoundException, RevisionsDontMatch {
         // given
         int gameId = 1;
+        int revision = 0;
 
         // when
-        gameController.deleteGame(gameId);
+        gameController.deleteGame(gameId, revision);
 
         // then
-        verify(gameService).deleteGame(gameId);
-    }
-
-
-    @Test
-    public void givenAddDeckRequest_whenAddDeck_thenReturnNewGameId() {
-        // given
-        int gameId = 1;
-
-        // when
-        gameController.addDeck(gameId);
-
-        // then
-        verify(gameService).addDeck(gameId);
+        verify(gameService).deleteGame(gameId, new Revision(revision));
     }
 
     @Test
-    public void givenAddPlayerRequest_whenAddNewPlayer_thenDelegateToService() {
+    public void givenAddDeckRequest_whenAddDeck_thenReturnNewGameId() throws RevisionsDontMatch, GameNotFoundException {
         // given
         int gameId = 1;
-        int playerId = 2;
+        int revision=0;
 
         // when
-        gameController.addPlayer(gameId, playerId);
+        gameController.addDeck(gameId,revision);
 
         // then
-        verify(gameService).addPlayer(gameId, playerId);
+        verify(gameService).addDeck(gameId, new Revision(revision));
+    }
+
+    @Test
+    public void givenAddPlayerRequest_whenAddNewPlayer_thenDelegateToService() throws PlayerNotFoundException, GameNotFoundException {
+        // given
+        int gameId = 1;
+        int revision=0;
+
+        // when
+        gameController.addPlayer(gameId, revision);
+
+        // then
+        verify(gameService).addPlayer(gameId , new Revision(revision));
 
     }
 
@@ -86,12 +91,13 @@ class GameControllerTest {
         // given
         int gameId = 1;
         int playerId = 2;
+        int revision=0;
 
         // when
-        gameController.removePlayer(gameId, playerId);
+        gameController.removePlayer(gameId, playerId,revision);
 
         // then
-        verify(gameService).removePlayer(gameId, playerId);
+        verify(gameService).removePlayer(gameId, playerId, new Revision(revision));
 
     }
 
@@ -103,15 +109,16 @@ class GameControllerTest {
         // given
         int gameId = 1;
         int playerId = 2;
+        int revision=0;
 
-        when(gameService.dealCardToPlayer(gameId, playerId)).thenReturn(player);
+        when(gameService.dealCardToPlayer(gameId, playerId, new Revision(revision))).thenReturn(player);
         when(playerJsonMapper.mapPlayer(player)).thenReturn(playerJson);
 
         // when
-        PlayerJson expected = gameController.dealCardToPlayer(gameId, playerId);
+        PlayerJson expected = gameController.dealCardToPlayer(gameId, playerId, revision);
 
         // then
-        verify(gameService).dealCardToPlayer(gameId, playerId);
+        verify(gameService).dealCardToPlayer(gameId, playerId, new Revision(revision));
         verify(playerJsonMapper).mapPlayer(player);
         assertThat(expected).isEqualTo(playerJson);
 
@@ -138,12 +145,13 @@ class GameControllerTest {
     public void givenShuffleRequest_whenShuffle_thenDelegateToService() {
         // given
         int gameId = 1;
+        int revision=0;
 
         // when
-        gameController.shuffle(gameId);
+        gameController.shuffle(gameId,revision);
 
         // then
-        verify(gameService).shuffle(gameId);
+        verify(gameService).shuffle(gameId, new Revision(revision));
     }
 
 }

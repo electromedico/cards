@@ -1,23 +1,30 @@
 package com.example.demo.web.game;
 
+import com.example.demo.domain.game.Game;
 import com.example.demo.domain.player.Player;
+import com.example.demo.erros.GameNotFoundException;
+import com.example.demo.erros.PlayerNotFoundException;
+import com.example.demo.erros.RevisionsDontMatch;
+import com.example.demo.utils.Revision;
 
 import java.util.List;
 
 public interface GameService {
-    int newGame();
+    Integer newGame();
 
-    void deleteGame(int id);
+    void deleteGame(int gameId,Revision revision) throws GameNotFoundException, RevisionsDontMatch;
 
-    void shuffle(int id);
+    Revision addDeck(int gameId, Revision revision) throws GameNotFoundException, RevisionsDontMatch;
 
-    void addDeck(int id);
+    Game addPlayer(int gameId, Revision revision) throws GameNotFoundException, RevisionsDontMatch;
 
-    void addPlayer(int id, int playerId);
+    Game dealCardToPlayer(int gameId, int playerId, Revision revision) throws RevisionsDontMatch, GameNotFoundException, PlayerNotFoundException;
 
-    Player dealCardToPlayer(int id, int playerId);
+    List<Player> getPlayers(int gameId) throws GameNotFoundException;
 
-    List<Player> getPlayers(int id);
+    Revision removePlayer(int gameId, int playerId,Revision revision) throws RevisionsDontMatch, GameNotFoundException, PlayerNotFoundException;
 
-    void removePlayer(int id, int playerId);
+    Revision shuffle(int gameId, Revision revision) throws GameNotFoundException, RevisionsDontMatch;
+
+
 }

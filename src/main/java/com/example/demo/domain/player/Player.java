@@ -1,5 +1,6 @@
 package com.example.demo.domain.player;
 
+import com.example.demo.domain.deck.Card;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,5 +9,5 @@ import java.util.List;
 @Getter
 public class Player {
     Integer id;
-    List<Integer> cards;
+    List<Card> cards;
 }
