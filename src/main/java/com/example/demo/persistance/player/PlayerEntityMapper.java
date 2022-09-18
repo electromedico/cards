@@ -4,10 +4,9 @@ package com.example.demo.persistance.player;
 import com.example.demo.domain.deck.Card;
 import com.example.demo.domain.player.Player;
 import com.example.demo.persistance.cards.CardEntityMapper;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class PlayerEntityMapper {

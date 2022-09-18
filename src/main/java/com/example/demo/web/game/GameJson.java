@@ -12,5 +12,5 @@ import lombok.Data;
 public class GameJson {
   private Integer id;
   private List<PlayerJson> players;
-  private DeckJson deck;
+  private List<DeckJson> decks;
 }

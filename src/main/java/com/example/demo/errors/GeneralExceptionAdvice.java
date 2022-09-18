@@ -30,4 +30,11 @@ public class GeneralExceptionAdvice {
   String revisionsDontMatchExceptionHandler(RevisionsDontMatchException ex) {
     return ex.getMessage();
   }
+
+  @ResponseBody
+  @ExceptionHandler(NoUnassignedDecksException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  String noUnassignedDecksExceptionHandler(NoUnassignedDecksException ex) {
+    return ex.getMessage();
+  }
 }

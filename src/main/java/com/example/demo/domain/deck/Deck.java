@@ -10,13 +10,15 @@ import lombok.Data;
 @Data
 @Builder
 public class Deck {
+  private Integer id;
+  private Integer gameId;
   private List<Card> cards;
 
   public static Deck buildNewDeck() {
     return Deck.builder().cards(buildNewSetOfCards()).build();
   }
 
-  public static List<Card> buildNewSetOfCards() {
+  private static List<Card> buildNewSetOfCards() {
     var cards = new ArrayList<Card>();
     for (Suit suit : Suit.values()) {
       for (int i = 1; i <= 13; i++) {

@@ -8,14 +8,13 @@ import com.example.demo.errors.PlayerNotFoundException;
 import com.example.demo.errors.RevisionsDontMatchException;
 import com.example.demo.utils.Revision;
 import com.example.demo.web.player.PlayerService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 @Transactional
@@ -45,10 +44,10 @@ public class PlayerServiceImpl implements PlayerService {
     game.setPlayers(players);
     List<Player> newPlayers = new ArrayList<>(players);
     Player player =
-            newPlayers.stream()
-                    .filter(element -> Objects.equals(element.getId(), playerId))
-                    .findFirst()
-                    .orElseThrow(() -> new PlayerNotFoundException(playerId));
+        newPlayers.stream()
+            .filter(element -> Objects.equals(element.getId(), playerId))
+            .findFirst()
+            .orElseThrow(() -> new PlayerNotFoundException(playerId));
 
     newPlayers.remove(player);
     game.setPlayers(newPlayers);

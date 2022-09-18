@@ -1,7 +1,6 @@
 /* (C) 2022 */
 package com.example.demo.persistance.game;
 
-import java.sql.Clob;
 import javax.persistence.*;
 
 @Entity
@@ -14,10 +13,6 @@ public class GameEntity {
 
   @Column(name = "revision")
   private Integer revision;
-
-  @Lob
-  @Column(name = "cards")
-  private Clob cards;
 
   public Integer getId() {
     return id;
@@ -33,13 +28,5 @@ public class GameEntity {
 
   public void setRevision(Integer revision) {
     this.revision = revision;
-  }
-
-  public Clob getCards() {
-    return cards;
-  }
-
-  public void setCards(Clob cards) {
-    this.cards = cards;
   }
 }

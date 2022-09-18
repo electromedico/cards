@@ -14,5 +14,5 @@ public class Game {
   private Integer id;
   private Revision revision;
   private List<Player> players;
-  private Deck deck;
+  private List<Deck> decks;
 }

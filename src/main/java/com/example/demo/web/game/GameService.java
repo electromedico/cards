@@ -2,10 +2,7 @@
 package com.example.demo.web.game;
 
 import com.example.demo.domain.game.Game;
-import com.example.demo.errors.EmptyDeckException;
-import com.example.demo.errors.GameNotFoundFoundException;
-import com.example.demo.errors.PlayerNotFoundException;
-import com.example.demo.errors.RevisionsDontMatchException;
+import com.example.demo.errors.*;
 import com.example.demo.utils.Revision;
 
 public interface GameService {
@@ -15,7 +12,7 @@ public interface GameService {
       throws GameNotFoundFoundException, RevisionsDontMatchException;
 
   Revision addDeck(Integer gameId, Revision revision)
-      throws GameNotFoundFoundException, RevisionsDontMatchException;
+      throws GameNotFoundFoundException, RevisionsDontMatchException, NoUnassignedDecksException;
 
   Game dealCardToPlayer(Integer gameId, Integer playerId, Revision revision)
       throws RevisionsDontMatchException, GameNotFoundFoundException, PlayerNotFoundException,

@@ -3,7 +3,7 @@ package com.example.demo.domain.deck;
 
 public enum Suit {
   HEART,
-  CLOVER,
+  CLUB,
   DIAMOND,
   SPADE
 }

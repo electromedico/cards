@@ -3,20 +3,16 @@ package com.example.demo.web.game;
 
 import com.example.demo.domain.game.Game;
 import com.example.demo.domain.player.Player;
-import com.example.demo.errors.EmptyDeckException;
-import com.example.demo.errors.GameNotFoundFoundException;
-import com.example.demo.errors.PlayerNotFoundException;
-import com.example.demo.errors.RevisionsDontMatchException;
+import com.example.demo.errors.*;
 import com.example.demo.utils.Revision;
 import com.example.demo.web.player.PlayerService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
 import java.util.AbstractMap;
 import java.util.Comparator;
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/game")
@@ -44,7 +40,7 @@ public class GameController {
       @PathVariable int id,
       @RequestHeader(HttpHeaders.IF_MATCH) int revision,
       HttpServletResponse response)
-      throws RevisionsDontMatchException, GameNotFoundFoundException {
+      throws RevisionsDontMatchException, GameNotFoundFoundException, NoUnassignedDecksException {
     Revision newRevision = gameService.addDeck(id, new Revision(revision));
     response.addHeader(HttpHeaders.IF_MATCH, newRevision.toString());
   }
